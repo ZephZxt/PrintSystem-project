@@ -1,9 +1,15 @@
 <template>
-    <div>
+    <ContentField>
         印刷任务
-    </div>
+    </ContentField>
 </template>
 <script>
+import ContentField from "@/components/ContentField.vue";
+export default{
+    components: {
+        ContentField,
+    }
+}
 </script>
 
 <style scoped>
