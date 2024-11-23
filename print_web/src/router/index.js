@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Docs_PbView from '../views/Publisher/Docs_PbView.vue'
 import Tasks_PbView from '../views/Publisher/Tasks_PbView.vue'
 import NotFound from '../views/error/NotFound.vue'
+import LoginView from '@/views/LoginView.vue'
+import RegisterView from '@/views/RegisterView.vue'
 
 const routes = [
   {
@@ -18,6 +20,16 @@ const routes = [
     path: "/publisher/tasks/",
     name: "tasks_p",
     component: Tasks_PbView,
+  },
+  {
+    path: "/login/",
+    name: "loginview",
+    component: LoginView,
+  },
+  {
+    path: "/register/",
+    name: "registerview",
+    component: RegisterView,
   },
   {
     path: "/404/",

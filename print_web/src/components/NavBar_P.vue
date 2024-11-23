@@ -14,14 +14,26 @@
           <router-link :class="route_name == 'tasks_p'? 'nav-link active' : 'nav-link'" :to="{name: 'tasks_p'}">印刷任务</router-link>
         </li>
       </ul>
-      <ul class="navbar-nav">
+      <ul class="navbar-nav" v-if="$store.state.user.is_login">
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Publisher
+            {{ $store.state.user.username }}
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">退出</a></li>
+            <li><router-link class="dropdown-item" :to="{name: 'loginview'}" @click="logout">退出</router-link></li>
           </ul>
+        </li>
+      </ul>
+      <ul class="navbar-nav" v-else>
+        <li class="nav-item">
+          <router-link class="nav-link " :to="{name: 'loginview'}" role="button">
+            登录
+          </router-link>
+        </li>
+        <li class="nav-item">
+          <router-link class="nav-link" :to="{name: 'registerview'}" role="button">
+            注册
+          </router-link>
         </li>
       </ul>
     </div>
@@ -29,16 +41,22 @@
 </nav>
 </template>
 <script>
-//import router from '@/router';
+import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
 import { computed } from 'vue'
 
 export default {
     setup() {
-        const route = useRoute();
+        const store = useStore()
+        const route = useRoute()
         let route_name = computed(() => route.name)
+        const logout = () => {
+          store.dispatch("logout")
+        }
+
         return {
-            route_name
+            route_name,
+            logout
         }
     }
 }
