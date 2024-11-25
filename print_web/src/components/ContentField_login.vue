@@ -28,9 +28,6 @@ div.card {
     width: 90%;
     max-width: 800px; 
     padding: 20px;;       /* 宽度为 100% */
-    height: 50%;       /* 高度为 100% */
-    
-    
+    height: 50%;       /* 高度为 100% */ 
 }
-
 </style>

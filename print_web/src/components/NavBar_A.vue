@@ -1,0 +1,72 @@
+<template>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <router-link class="navbar-brand" :to="{name: 'docs_a'}">Priting System</router-link>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarText">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <router-link :class="route_name == 'docs_a'? 'nav-link active' : 'nav-link'" :to="{name: 'docs_a'}">印刷单据</router-link>
+            </li>
+            <li class="nav-item">
+              <router-link :class="route_name == 'lists_a'? 'nav-link active' : 'nav-link'" :to="{name: 'lists_a'}">采购清单</router-link>
+            </li>
+            <li class="nav-item">
+              <router-link :class="route_name == 'departments_a'? 'nav-link active' : 'nav-link'" :to="{name: 'departments_a'}">印刷部门</router-link>
+            </li>
+            <li class="nav-item">
+              <router-link :class="route_name == 'tasks_a'? 'nav-link active' : 'nav-link'" :to="{name: 'tasks_a'}">印刷任务</router-link>
+            </li>
+          </ul>
+          <ul class="navbar-nav" v-if="$store.state.user.is_login">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                {{ $store.state.user.username }}
+              </a>
+              <ul class="dropdown-menu">
+                <li><router-link class="dropdown-item" :to="{name: 'loginview'}" @click="logout">退出</router-link></li>
+              </ul>
+            </li>
+          </ul>
+          <ul class="navbar-nav" v-else-if="!$store.state.user.pulling_info">
+            <li class="nav-item">
+              <router-link class="nav-link " :to="{name: 'loginview'}" role="button">
+                登录
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link class="nav-link" :to="{name: 'registerview'}" role="button">
+                注册
+              </router-link>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    </template>
+    <script>
+    import { useStore } from 'vuex'
+    import { useRoute } from 'vue-router'
+    import { computed } from 'vue'
+    
+    export default {
+        setup() {
+            const store = useStore()
+            const route = useRoute()
+            let route_name = computed(() => route.name)
+            const logout = () => {
+              store.dispatch("logout")
+            }
+    
+            return {
+                route_name,
+                logout,
+            }
+        }
+    }
+    </script>
+    <style scoped>
+    </style>
+    

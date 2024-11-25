@@ -13,8 +13,8 @@ export default{
 </script>
 
 <style>
-body {
+/* body {
   background-image: url(@/assets/background.png);
   background-size: cover;
-}
+} */
 </style>

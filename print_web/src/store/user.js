@@ -6,7 +6,8 @@ export default {
         username: "",
         role: "",
         token: "",
-        is_login: false
+        is_login: false,
+        pulling_info: true,
     },
     getters: {
     },
@@ -27,7 +28,10 @@ export default {
           state.token = ""
           state.is_login = false
 
-        }
+        },
+        updatePullingInfo(state, pulling_info) {
+          state.pulling_info = pulling_info
+      }
     },
     actions: {
         login(context, data) {
@@ -36,14 +40,15 @@ export default {
                 type:"POST",
                 data: {
                   username: data.username,
-                  password: data.password
+                  password: data.password,
                 },
                 success(resp) {
                   if(resp.error_message === "success") {
-                    context.commit('updateToken', resp.token)
-                    data.success(resp)
+                    localStorage.setItem("jwt_token", resp.token);
+                    context.commit('updateToken', resp.token);
+                    data.success(resp);
                   }else {
-                    data.error(resp)
+                    data.error(resp);
                   }
                 },
                 error(resp) {
@@ -76,6 +81,7 @@ export default {
                 });
         },
         logout(context) {
+          localStorage.removeItem("jwt_token");
           context.commit('logout')
         }
     },
