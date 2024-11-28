@@ -9,10 +9,50 @@
 <script>
 import ContentField from "@/components/ContentField.vue";
 import NavBar_P from "@/components/NavBar_P.vue";
+import $ from "jquery";
+import { useStore } from "vuex";
 export default{
     components: {
         ContentField,
         NavBar_P
+    },
+    setup() {
+        const store = useStore();
+        // $.ajax({
+        //     url: "http://127.0.0.1:4000/docs/add/",
+        //     type: "POST",
+        //     data: {
+        //         pName: "武汉理工大学出版社",
+        //         bName: "数据库系统原理",
+        //         font: "宋体",
+        //         mName: "A4纸",
+        //         num: 10,
+        //     },
+        //     headers: {
+        //         Authorization: "Bearer " + store.state.user.token,
+        //     },
+        //     success(resp) {
+        //         console.log(resp);
+        //     },
+        //     error(resp) {
+        //         console.log(resp);
+        //     }
+        // })
+        $.ajax({
+            url: "http://127.0.0.1:4000/docs/get/",
+            type: "GET",
+            
+            headers: {
+                Authorization: "Bearer " + store.state.user.token,
+            },
+            success(resp) {
+                console.log(resp);
+            },
+            error(resp) {
+                console.log(resp);
+            }
+        })
+
     }
 }
 </script>
