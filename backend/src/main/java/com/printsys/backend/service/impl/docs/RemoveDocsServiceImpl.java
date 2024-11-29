@@ -23,11 +23,11 @@ public class RemoveDocsServiceImpl implements RemoveDocsService {
 
     User user = UserUtil.getUser();
 
-    int docs_no = Integer.parseInt(data.get("docs_no"));
+    int doc_no = Integer.parseInt(data.get("doc_no"));
 
-    Docs docs = docsMapper.selectById(docs_no);
+    Docs docs = docsMapper.selectById(doc_no);
 
-    Map<String, String> map = new HashMap<String, String>();
+    Map<String, String> map = new HashMap<>();
 
     if(docs == null ) {
       map.put("error_message", "单据不存在或已被删除");
@@ -40,7 +40,7 @@ public class RemoveDocsServiceImpl implements RemoveDocsService {
     }
 
 
-    docsMapper.deleteById(docs_no);
+    docsMapper.deleteById(doc_no);
     map.put("error_message", "success");
 
     return map;

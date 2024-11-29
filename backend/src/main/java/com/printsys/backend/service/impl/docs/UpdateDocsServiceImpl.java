@@ -23,15 +23,18 @@ public class UpdateDocsServiceImpl implements UpdateDocsService {
 
     User user = UserUtil.getUser();
 
-    int docs_no = Integer.parseInt(data.get("docs_no"));
+    Map<String, String> map = new HashMap<>();
+
+    int doc_no = Integer.parseInt(data.get("doc_no"));
 
     String pName = data.get("pName");
     String bName = data.get("bName");
     String font = data.get("font");
     String mName = data.get("mName");
-    int num = Integer.parseInt(data.get("num"));
+    String num_s = data.get("num");
+    int num = 0;
 
-    Map<String, String> map = new HashMap<>();
+
 
     if(pName == null || pName.isEmpty()) {
       map.put("error_message", "出版商名称不能为空");
@@ -73,12 +76,15 @@ public class UpdateDocsServiceImpl implements UpdateDocsService {
       return map;
     }
 
-    if(num <= 0) {
-      map.put("error_message", "印刷数量需为正数");
+    if(num_s == null || num_s.isEmpty()) {
+      map.put("error_message", "印刷数量不能为空");
       return map;
     }
+    else {
+      num = Integer.parseInt(data.get("num"));
+    }
 
-    Docs docs = docsMapper.selectById(docs_no);
+    Docs docs = docsMapper.selectById(doc_no);
     if(docs == null) {
       map.put("error_message", "单据不存在或已被删除");
       return map;

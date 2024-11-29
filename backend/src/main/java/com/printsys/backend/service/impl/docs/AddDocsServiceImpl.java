@@ -25,7 +25,8 @@ public class AddDocsServiceImpl implements AddDocsService {
     String bName = data.get("bName");
     String font = data.get("font");
     String mName = data.get("mName");
-    int num = Integer.parseInt(data.get("num"));
+    String num_s = data.get("num");
+    int num = 0;
 
     Map<String, String> map = new HashMap<>();
 
@@ -68,6 +69,15 @@ public class AddDocsServiceImpl implements AddDocsService {
       map.put("error_message", "印刷材料名称过长");
       return map;
     }
+
+    if(num_s == null || num_s.isEmpty()) {
+      map.put("error_message", "印刷数量不能为空");
+      return map;
+    }
+    else {
+       num = Integer.parseInt(data.get("num"));
+    }
+
 
     if(num <= 0) {
       map.put("error_message", "印刷数量需为正数");

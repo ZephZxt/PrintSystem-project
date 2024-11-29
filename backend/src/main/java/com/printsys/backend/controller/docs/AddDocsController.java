@@ -17,5 +17,4 @@ public class AddDocsController {
   public Map<String, String> add(@RequestParam Map<String, String> data) {
     return addDocsService.addDocs(data);
   }
-
 }

@@ -16,12 +16,12 @@
       </ul>
       <ul class="navbar-nav" v-if="$store.state.user.is_login">
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            {{ $store.state.user.username }}
-          </a>
-          <ul class="dropdown-menu">
-            <li><router-link class="dropdown-item" :to="{name: 'loginview'}" @click="logout">退出</router-link></li>
-          </ul>
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                {{ $store.state.user.username }}
+              </a>
+              <ul class="dropdown-menu">
+                <li><router-link class="dropdown-item" :to="{name: 'loginview'}" @click="logout">退出</router-link></li>
+              </ul>
         </li>
       </ul>
       <ul class="navbar-nav" v-else-if="!$store.state.user.pulling_info">
