@@ -5,7 +5,6 @@ import com.printsys.backend.pojo.Docs;
 import com.printsys.backend.pojo.User;
 import com.printsys.backend.service.docs.RemoveDocsService;
 import com.printsys.backend.utils.UserUtil;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -23,6 +22,8 @@ public class RemoveDocsServiceImpl implements RemoveDocsService {
 
     User user = UserUtil.getUser();
 
+    String username = user.getUsername();
+
     int doc_no = Integer.parseInt(data.get("doc_no"));
 
     Docs docs = docsMapper.selectById(doc_no);
@@ -34,7 +35,7 @@ public class RemoveDocsServiceImpl implements RemoveDocsService {
       return map;
     }
 
-    if(!Objects.equals(docs.getPNo(), user.getId())) {
+    if(!Objects.equals(docs.getPNo(), user.getId()) && !Objects.equals(username,"Admin")) {
       map.put("error_message", "没有权限删除");
       return map;
     }

@@ -21,13 +21,11 @@
             </li>
           </ul>
           <ul class="navbar-nav" v-if="$store.state.user.is_login">
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                {{ $store.state.user.username }}
-              </a>
-              <ul class="dropdown-menu">
-                <li><router-link class="dropdown-item" :to="{name: 'loginview'}" @click="logout">退出</router-link></li>
-              </ul>
+            <li class="username-container">
+              <span class="username">{{ $store.state.user.username }}</span>
+            </li>
+            <li class="button-container">
+              <router-link class="btn btn-outline-light" :to="{name: 'loginview'}" @click="logout">退出</router-link>
             </li>
           </ul>
           <ul class="navbar-nav" v-else-if="!$store.state.user.pulling_info">
@@ -45,28 +43,37 @@
         </div>
       </div>
     </nav>
-    </template>
-    <script>
-    import { useStore } from 'vuex'
-    import { useRoute } from 'vue-router'
-    import { computed } from 'vue'
+</template>
+<script>
+import { useStore } from 'vuex'
+import { useRoute } from 'vue-router'
+import { computed } from 'vue'
     
-    export default {
-        setup() {
-            const store = useStore()
-            const route = useRoute()
-            let route_name = computed(() => route.name)
-            const logout = () => {
-              store.dispatch("logout")
-            }
-    
-            return {
-                route_name,
-                logout,
-            }
+export default {
+    setup() {
+        const store = useStore()
+        const route = useRoute()
+        let route_name = computed(() => route.name)
+        const logout = () => {
+          store.dispatch("logout")
+        }
+
+        return {
+            route_name,
+            logout,
         }
     }
-    </script>
-    <style scoped>
-    </style>
+}
+</script>
+<style scoped>
+.username {
+  font-size: 18px;
+  color: #fff;
+  margin-right: 10px;
+}
+.username-container {
+  margin-top: 6px;
+  margin-right: 10px
+}
+</style>
     

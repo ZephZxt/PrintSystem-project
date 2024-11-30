@@ -22,6 +22,7 @@ public class UpdateDocsServiceImpl implements UpdateDocsService {
   public Map<String, String> updateDocs(Map<String, String> data) {
 
     User user = UserUtil.getUser();
+    String username = user.getUsername();
 
     Map<String, String> map = new HashMap<>();
 
@@ -90,14 +91,14 @@ public class UpdateDocsServiceImpl implements UpdateDocsService {
       return map;
     }
 
-    if(!Objects.equals(docs.getPNo(), user.getId())) {
+    if(!Objects.equals(docs.getPNo(), user.getId()) && !Objects.equals(username,"Admin")) {
       map.put("error_message", "没有权限修改");
       return map;
     }
 
     Docs new_docs = new Docs(
         docs.getDno(),
-        user.getId(),
+        docs.getPNo(),
         pName,
         bName,
         font,
