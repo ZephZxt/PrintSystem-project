@@ -53,7 +53,7 @@ public class AddDepsServiceImpl implements AddDepsService {
       return map;
     }
 
-    Departments departments = new Departments(null, pdName, address, teleNumber);
+    Departments departments = new Departments(null, pdName, address, teleNumber,0);
 
     departmentsMapper.insert(departments);
     map.put("error_message", "success");

@@ -4,6 +4,8 @@
         <div class="card">
             <div class="card-header">
                 <span class="card-title">采购清单管理</span>
+                <button type="button" class="btn btn-success my-custom-button" @click="refresh_lists(1)">采购已完成</button>
+                <button type="button" class="btn btn-secondary my-custom-button" @click="refresh_lists(0)">采购未完成</button>
                 <button type="button" class="btn btn-primary float-end" data-bs-toggle="modal" data-bs-target="#add-list-modal">
                     添加采购清单
                 </button>
@@ -53,6 +55,7 @@
                                 <th>采购材料单价</th>
                                 <th>采购材料时间</th>
                                 <th>采购是否完成</th>
+                                <th>操作</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -138,19 +141,22 @@ export default{
         
         });
 
-        const refresh_lists = () => {
+        const refresh_lists = (filter) => {
             $.ajax({
                 url: "http://127.0.0.1:4000/checklists/get/",
                 type: "GET",
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,  
                 },
+                data : {
+                    filter: filter,
+                },
                 success(resp) {
                     lists.value = resp;
                 }
             })
         }
-        refresh_lists();
+        refresh_lists(2);
 
         const add_list = () => {
             listadd.error_message = "";
@@ -248,6 +254,7 @@ export default{
             add_list,
             update_list,
             remove_list,
+            refresh_lists,
         }
 
     }
@@ -270,6 +277,11 @@ div.card {
 }
 .card-title {
     font-size: 120%;
+}
+.my-custom-button {
+    font-size: 15px; /* 文字大小 */
+   
+    margin-left: 15px;
 }
 div.error_message {
     color: red;

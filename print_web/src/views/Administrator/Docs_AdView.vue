@@ -5,6 +5,8 @@
         <div class="card">
             <div class="card-header">
                 <span class="card-title">全部印刷单据</span>
+                <button type="button" class="btn btn-success my-custom-button" @click="refresh_docs(1)">已加入印刷任务</button>
+                <button type="button" class="btn btn-secondary my-custom-button" @click="refresh_docs(2)">未加入印刷任务</button>
             </div>
             <div class="card-body">
                 <div class="table-container">
@@ -16,6 +18,7 @@
                                 <th>出版商名称</th>
                                 <th>书籍名称</th>
                                 <th>印刷字体</th>
+                                <th>印刷材料名称</th>
                                 <th>印刷数量</th>
                                 <th>创建时间</th>
                                 <th>修改时间</th>
@@ -30,6 +33,7 @@
                                 <td>{{ doc.pname }}</td>
                                 <td>{{ doc.bname }}</td>
                                 <td>{{ doc.font }}</td>
+                                <td>{{ doc.mname }}</td>
                                 <td>{{ doc.num }}</td>
                                 <td>{{ doc.createtime }}</td>
                                 <td>{{ doc.modifytime }}</td>
@@ -38,10 +42,6 @@
                                     <button type="button" class="btn btn-secondary" style="margin-right: 10px;" data-bs-toggle="modal" :data-bs-target="'#update-doc-modal-' + doc.dno">
                                         修改
                                     </button>
-                                    <button type="button" class="btn btn-danger" @click="remove_doc(doc)">
-                                        删除
-                                    </button>
-
                                     <!-- Modal -->
                                     <div class="modal fade" :id="'update-doc-modal-' + doc.dno" tabindex="-1">
                                         <div class="modal-dialog">
@@ -80,6 +80,38 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <button type="button" class="btn btn-danger" @click="remove_doc(doc)">
+                                        删除
+                                    </button>
+                                    <button type="button" class="btn btn-dark" style="margin-right: 10px;margin-top: 5px;" data-bs-toggle="modal" :data-bs-target="'#add-task-modal-' + doc.dno">
+                                        加入印刷任务
+                                    </button>
+                                    <!-- Modal -->
+                                    <div class="modal fade" :id="'add-task-modal-' + doc.dno" tabindex="-1">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5">加入印刷任务</h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="mb-3">
+                                                <label for="add-task-pdno" class="form-label">印刷部门编号</label>
+                                                <input v-model="taskadd.pd_no" type="text" class="form-control" id="add-task-pdno">
+                                                </div>
+                                                <div class="mb-3">
+                                                <label for="add-task-time" class="form-label">预计完成时间</label>
+                                                <input v-model="taskadd.time" type="text" class="form-control" id="add-task-time">
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <div class="error_message">{{ taskadd.error_message }}</div>
+                                                <button type="button" class="btn btn-primary" @click="add_task(doc)">加入</button>
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                                            </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
@@ -94,7 +126,7 @@
 import $ from "jquery";
 import NavBar_A from "@/components/NavBar_A.vue";
 import { useStore } from "vuex";
-import { ref } from "vue";
+import { ref, reactive } from "vue";
 import { Modal } from "bootstrap/dist/js/bootstrap";
 export default{
     components: {
@@ -103,20 +135,30 @@ export default{
     setup() {
         const store = useStore();
         let docs = ref([]);
+        const taskadd = reactive({
+            pd_no: "",
+            time: "",
+            error_message: "",
 
-        const refresh_docs = () => {
+        });
+
+
+        const refresh_docs = (filter) => {
             $.ajax({
                 url: "http://127.0.0.1:4000/docs/get/",
                 type: "GET",
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,  
                 },
+                data: {
+                    filter: filter,
+                },
                 success(resp) {
                     docs.value = resp;
                 }
             })
         }
-        refresh_docs();
+        refresh_docs(0);
 
         const update_doc = (doc) => {
             $.ajax({
@@ -177,10 +219,43 @@ export default{
 
     }
 
+    const add_task = (doc) => {
+            doc.error_message = "";
+            $.ajax({
+                url: "http://127.0.0.1:4000/tasks/add/",
+                type: "POST",
+                data: {
+                    dno: doc.dno,
+                    pd_no: taskadd.pd_no,
+                    state:2,
+                    time:taskadd.time,
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,  
+                },
+                success(resp) {
+                    if(resp.error_message === "success") {
+                        
+                        Modal.getInstance(document.querySelector('#add-task-modal-' + doc.dno)).hide();
+                        const backdrop = document.querySelector('.modal-backdrop');
+                        if (backdrop) {
+                            backdrop.remove(); // 移除模态框的遮罩层
+                        }
+                        
+                    } else {
+                        taskadd.error_message = resp.error_message;
+                    }
+                }
+            })
+        }
+
         return {
             docs,
             remove_doc,
             update_doc,
+            refresh_docs,
+            taskadd,
+            add_task,
         }
     }
 }
@@ -204,7 +279,25 @@ div.card {
 .card-title {
     font-size: 120%;
 }
+.my-custom-button {
+    font-size: 15px; /* 文字大小 */
+   
+    margin-left: 15px;
+}
 div.error_message {
     color: red;
+}
+
+.table-container {
+    max-height: 500px; /* 可根据需要调整 */
+    overflow-y: auto;  /* 启用垂直滚动 */
+    
+}
+
+.table thead th {
+    position: sticky; /* 使表头粘性 */
+    top: 0;          /* 固定在顶部 */
+    background-color: #f8f9fa; /* 背景色，与Bootstrap一致 */
+    z-index: 2;     /* 确保在内容上方 */
 }
 </style>

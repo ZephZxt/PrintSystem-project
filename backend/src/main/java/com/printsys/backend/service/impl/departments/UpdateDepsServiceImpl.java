@@ -65,7 +65,8 @@ public class UpdateDepsServiceImpl implements UpdateDepsService {
         departments.getPdNo(),
         pdName,
         address,
-        teleNumber
+        teleNumber,
+        0
     );
 
     departmentsMapper.updateById(new_dep);

@@ -4,6 +4,8 @@
         <div class="card">
             <div class="card-header">
                 <span class="card-title">我的印刷单据</span>
+                <button type="button" class="btn btn-success my-custom-button" @click="refresh_docs(1)">已加入印刷任务</button>
+                <button type="button" class="btn btn-secondary my-custom-button" @click="refresh_docs(0)">未加入印刷任务</button>
                 <button type="button" class="btn btn-primary float-end" data-bs-toggle="modal" data-bs-target="#add-doc-modal">
                     创建单据
                 </button>
@@ -56,6 +58,7 @@
                                 <th>出版商名称</th>
                                 <th>书籍名称</th>
                                 <th>印刷字体</th>
+                                <th>印刷材料名称</th>
                                 <th>印刷数量</th>
                                 <th>创建时间</th>
                                 <th>修改时间</th>
@@ -70,6 +73,7 @@
                                 <td>{{ doc.pname }}</td>
                                 <td>{{ doc.bname }}</td>
                                 <td>{{ doc.font }}</td>
+                                <td>{{ doc.mmname }}</td>
                                 <td>{{ doc.num }}</td>
                                 <td>{{ doc.createtime }}</td>
                                 <td>{{ doc.modifytime }}</td>
@@ -152,12 +156,15 @@ export default{
             error_message: "",
         });
         
-        const refresh_docs = () => {
+        const refresh_docs = (filter) => {
             $.ajax({
                 url: "http://127.0.0.1:4000/docs/get/",
                 type: "GET",
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,  
+                },
+                data : {
+                    filter: filter,
                 },
                 success(resp) {
                     docs.value = resp; //后端将List转换为json格式，这里直接赋值给docs
@@ -166,7 +173,7 @@ export default{
                 }
             })
         }
-        refresh_docs();
+        refresh_docs(2);
 
         const add_doc = () => {
             docadd.error_message = "";
@@ -270,6 +277,7 @@ export default{
             add_doc,
             remove_doc,
             update_doc,
+            refresh_docs,
         }
 }
 // setup 函数中的 return 语句用于将需要在组件模板中使用的数据和方法暴露出来。
@@ -292,7 +300,13 @@ div.card {
     
 }
 .card-title {
-    font-size: 120%;
+    font-size: 145%;
+}
+
+.my-custom-button {
+    font-size: 15px; /* 文字大小 */
+   
+    margin-left: 15px;
 }
 div.error_message {
     color: red;

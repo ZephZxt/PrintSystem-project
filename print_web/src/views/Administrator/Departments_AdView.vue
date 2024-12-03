@@ -47,6 +47,8 @@
                                 <th>部门名称</th>
                                 <th>部门地址</th>
                                 <th>部门电话</th>
+                                <th>执行的印刷任务数</th>
+                                <th>操作</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -55,6 +57,7 @@
                                 <td>{{ dep.pdName }}</td>
                                 <td>{{ dep.address }}</td>
                                 <td>{{ dep.teleNumber }}</td>
+                                <td>{{ dep.num }}</td>
                                 <td>
                                     <button type="button" class="btn btn-secondary" style="margin-right: 10px;" data-bs-toggle="modal" :data-bs-target="'#update-dep-modal-' + dep.pdNo">
                                         修改
