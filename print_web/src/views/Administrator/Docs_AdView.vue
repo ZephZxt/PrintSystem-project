@@ -4,7 +4,7 @@
         <NavBar_A/>
         <div class="card">
             <div class="card-header">
-                <span class="card-title">全部印刷单据</span>
+                <button type="button" class="btn btn-light" style="font-size: 120%;" @click="refresh_docs(0)">全部印刷单据</button>
                 <button type="button" class="btn btn-success my-custom-button" @click="refresh_docs(1)">已加入印刷任务</button>
                 <button type="button" class="btn btn-secondary my-custom-button" @click="refresh_docs(2)">未加入印刷任务</button>
             </div>
@@ -37,7 +37,10 @@
                                 <td>{{ doc.num }}</td>
                                 <td>{{ doc.createtime }}</td>
                                 <td>{{ doc.modifytime }}</td>
-                                <td>{{ doc.state }}</td>
+                                <td>
+                                    <span v-if="doc.state == 1" style="color: green;">已加入</span>
+                                    <span v-else style="color: red;">未加入</span>
+                                </td>
                                 <td>
                                     <button type="button" class="btn btn-secondary" style="margin-right: 10px;" data-bs-toggle="modal" :data-bs-target="'#update-doc-modal-' + doc.dno">
                                         修改
@@ -227,7 +230,7 @@ export default{
                 data: {
                     dno: doc.dno,
                     pd_no: taskadd.pd_no,
-                    state:2,
+                    state:0,
                     time:taskadd.time,
                 },
                 headers: {

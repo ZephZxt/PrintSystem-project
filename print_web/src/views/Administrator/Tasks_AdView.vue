@@ -3,9 +3,11 @@
         <NavBar_A/>
         <div class="card">
             <div class="card-header">
-                <span class="card-title">全部印刷印刷任务</span>
-                <button type="button" class="btn btn-success my-custom-button" @click="refresh_taskss(1)">已完成</button>
+                
+                <button type="button" class="btn btn-light" style="font-size: 120%;" @click="refresh_tasks(3)">全部印刷任务</button>
+                <button type="button" class="btn btn-success my-custom-button" @click="refresh_tasks(1)">已完成</button>
                 <button type="button" class="btn btn-secondary my-custom-button" @click="refresh_tasks(0)">未开始</button>
+                <button type="button" class="btn btn-primary my-custom-button" @click="refresh_tasks(2)">进行中</button>
             </div>
             <div class="card-body">
                 <div class="table-container">
@@ -40,8 +42,21 @@
                                 <td>{{ task.pdName }}</td>
                                 <td>{{ task.teleNumber }}</td>
                                 <td>{{ task.time }}</td>
-                                <td>{{ task.state }}</td>
                                 <td>
+                                    <span v-if="task.state == 0" style="color: red;">未开始</span>
+                                    <span v-if="task.state == 2" style="color: blue;">进行中</span>
+                                    <span v-if="task.state == 1" style="color: green;">已完成</span>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-danger" @click="remove_task(task)" v-if="task.state == 1">
+                                        删除
+                                    </button>
+                                    <button type="button" class="btn btn-info" @click="task_finish(task)" v-if="task.state == 2">
+                                        完成印刷
+                                    </button>
+                                    <button type="button" class="btn btn-info" @click="task_start(task)" v-if="task.state == 0">
+                                        开始印刷
+                                    </button>
                                     <!-- <button type="button" class="btn btn-secondary" style="margin-right: 10px;" data-bs-toggle="modal" :data-bs-target="'#update-doc-modal-' + doc.dno">
                                         修改
                                     </button>
@@ -110,15 +125,15 @@ export default{
         const store = useStore();
         let tasks = ref([]);
 
-        const refresh_tasks = () => {
+        const refresh_tasks = (filter) => {
             $.ajax({
                 url: "http://127.0.0.1:4000/tasks/get/",
                 type: "GET",
+                data: {
+                    filter:filter,
+                },
                 headers: {
                     Authorization: "Bearer " + store.state.user.token,  
-                },
-                data : {
-
                 },
                 success(resp) {
                     tasks.value = resp;
@@ -126,11 +141,88 @@ export default{
                 }
             })
         }
-        refresh_tasks();
+        refresh_tasks(3);
+
+        const remove_task = (task) => {
+            if (confirm("确认删除该任务吗？")) { 
+            $.ajax({
+                url: "http://127.0.0.1:4000/tasks/remove/",
+                type: "POST",
+                data: {
+                    task_no: task.tno,
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,  
+                },
+                success(resp) {
+                    if(resp.error_message === "success") {
+                        alert("删除成功！");
+                        refresh_tasks(3);
+                    }
+                    else {
+                        alert("删除失败：" + resp.error_message);
+                    }
+                }
+            })
+        }
+            else {
+                console.log("用户取消了删除操作");
+            }
+
+    }
+
+    const task_finish = (task) => {
+        $.ajax({
+            url: "http://127.0.0.1:4000/tasks/update/state/",
+            type: "POST",
+            data: {
+                task_no: task.tno,
+                state: 1,
+            },
+            headers: {
+                Authorization: "Bearer " + store.state.user.token,  
+            },
+            success(resp) {
+                if(resp.error_message === "success") {
+                    alert("任务完成！");
+                    refresh_tasks(3);
+                }
+                else {
+                    alert("任务完成失败：" + resp.error_message);
+                }
+            }
+        })
+    }
+
+    const task_start = (task) => {
+        $.ajax({
+            url: "http://127.0.0.1:4000/tasks/update/state/",
+            type: "POST",
+            data: {
+                task_no: task.tno,
+                state: 2,
+            },
+            headers: {
+                Authorization: "Bearer " + store.state.user.token,  
+            },
+            success(resp) {
+                if(resp.error_message === "success") {
+                    alert("任务开始！");
+                    refresh_tasks(3);
+                }
+                else {
+                    alert("任务开始失败：" + resp.error_message);
+                }
+            }
+        })
+    }
 
         return {
             refresh_tasks,
             tasks,
+            remove_task,
+            task_finish,
+            task_start,
         }
         
     }
@@ -152,9 +244,7 @@ div.card {
     margin-right: 90px;
     
 }
-.card-title {
-    font-size: 120%;
-}
+
 .my-custom-button {
     font-size: 15px; /* 文字大小 */
    

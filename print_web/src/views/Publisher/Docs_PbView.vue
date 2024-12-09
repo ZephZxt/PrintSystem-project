@@ -3,7 +3,7 @@
         <NavBar_P/>
         <div class="card">
             <div class="card-header">
-                <span class="card-title">我的印刷单据</span>
+                <button type="button" class="btn btn-light" style="font-size: 120%;" @click="refresh_docs(2)">我的印刷单据</button>
                 <button type="button" class="btn btn-success my-custom-button" @click="refresh_docs(1)">已加入印刷任务</button>
                 <button type="button" class="btn btn-secondary my-custom-button" @click="refresh_docs(0)">未加入印刷任务</button>
                 <button type="button" class="btn btn-primary float-end" data-bs-toggle="modal" data-bs-target="#add-doc-modal">
@@ -73,13 +73,16 @@
                                 <td>{{ doc.pname }}</td>
                                 <td>{{ doc.bname }}</td>
                                 <td>{{ doc.font }}</td>
-                                <td>{{ doc.mmname }}</td>
+                                <td>{{ doc.mname }}</td>
                                 <td>{{ doc.num }}</td>
                                 <td>{{ doc.createtime }}</td>
                                 <td>{{ doc.modifytime }}</td>
-                                <td>{{ doc.state }}</td>
                                 <td>
-                                    <button type="button" class="btn btn-secondary" style="margin-right: 10px;" data-bs-toggle="modal" :data-bs-target="'#update-doc-modal-' + doc.dno">
+                                    <span v-if="doc.state == 1" style="color: green;">已加入</span>
+                                    <span v-else style="color: red;">未加入</span>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-secondary" style="margin-right: 10px;" data-bs-toggle="modal" :data-bs-target="'#update-doc-modal-' + doc.dno" :disabled="doc.state == 1">
                                         修改
                                     </button>
                                     <button type="button" class="btn btn-danger" @click="remove_doc(doc)">
