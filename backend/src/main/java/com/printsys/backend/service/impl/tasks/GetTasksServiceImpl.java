@@ -6,7 +6,6 @@ import com.printsys.backend.pojo.Tasks;
 import com.printsys.backend.pojo.User;
 import com.printsys.backend.service.tasks.GetTasksService;
 import com.printsys.backend.utils.UserUtil;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;

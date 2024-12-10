@@ -3,7 +3,7 @@
         <NavBar_A/>
         <div class="card">
             <div class="card-header">
-                <span class="card-title">采购清单管理</span>
+                <button type="button" class="btn btn-light" style="font-size: 120%;" @click="refresh_lists(2)">采购清单管理</button>
                 <button type="button" class="btn btn-success my-custom-button" @click="refresh_lists(1)">采购已完成</button>
                 <button type="button" class="btn btn-secondary my-custom-button" @click="refresh_lists(0)">采购未完成</button>
                 <button type="button" class="btn btn-primary float-end" data-bs-toggle="modal" data-bs-target="#add-list-modal">
@@ -65,13 +65,19 @@
                                 <td>{{ list.mnum }}</td>
                                 <td>{{ list.price }}</td>
                                 <td>{{ list.date }}</td>
-                                <td>{{ list.state }}</td>
+                                <td>
+                                    <span v-if="list.state == 1" style="color: green;">已完成</span>
+                                    <span v-else style="color: red;">未完成</span>
+                                </td>
                                 <td>
                                     <button type="button" class="btn btn-secondary" style="margin-right: 10px;" data-bs-toggle="modal" :data-bs-target="'#update-list-modal-' + list.lno">
                                         修改
                                     </button>
-                                    <button type="button" class="btn btn-danger" @click="remove_list(list)">
+                                    <button type="button" class="btn btn-danger" style="margin-right: 10px;" @click="remove_list(list)">
                                         删除
+                                    </button>
+                                    <button type="button" class="btn btn-info" @click="list_finish(list)" v-if="list.state == 0">
+                                        完成采购
                                     </button>
 
                                     <!-- Modal -->
@@ -183,7 +189,7 @@ export default{
                         if (backdrop) {
                             backdrop.remove(); // 移除模态框的遮罩层
                         }
-                        refresh_lists();
+                        refresh_lists(2);
                     } else {
                         listadd.error_message = resp.error_message;
                     }
@@ -222,7 +228,7 @@ export default{
         }
 
         const remove_list = (list) => {
-            if (confirm("确认要删除该部门吗？")) { 
+            if (confirm("确认要删除该清单吗？")) { 
             $.ajax({
                 url: "http://127.0.0.1:4000/checklists/remove/",
                 type: "POST",
@@ -248,6 +254,29 @@ export default{
             }
         }
 
+        const list_finish = (list) => {
+            $.ajax({
+                url: "http://127.0.0.1:4000/checklists/update/state/",
+                type: "POST",
+                data: {
+                    lno: list.lno,
+                    state: 1,
+                },
+                headers: {
+                    Authorization: "Bearer " + store.state.user.token,  
+                },
+                success(resp) {
+                    if(resp.error_message === "success") {
+                        alert("采购完成！");
+                        refresh_lists(2);
+                    }
+                    else {
+                        alert("完成失败：" + resp.error_message);
+                    }
+                }
+            })
+        }
+
         return {
             lists,
             listadd,
@@ -255,6 +284,7 @@ export default{
             update_list,
             remove_list,
             refresh_lists,
+            list_finish,
         }
 
     }

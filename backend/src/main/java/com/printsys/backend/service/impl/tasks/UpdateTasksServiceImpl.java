@@ -1,6 +1,9 @@
 package com.printsys.backend.service.impl.tasks;
 
+import com.printsys.backend.mapper.DepartmentsMapper;
+import com.printsys.backend.mapper.DocsMapper;
 import com.printsys.backend.mapper.TasksMapper;
+import com.printsys.backend.pojo.Departments;
 import com.printsys.backend.pojo.Docs;
 import com.printsys.backend.pojo.Tasks;
 import com.printsys.backend.pojo.User;
@@ -17,6 +20,8 @@ public class UpdateTasksServiceImpl implements UpdateTasksService {
 
   @Autowired
   private TasksMapper tasksMapper;
+  @Autowired
+  private DepartmentsMapper departmentsMapper;
 
   @Override
   public Map<String, String> updateTasks(Map<String, String> data) {
@@ -53,8 +58,27 @@ public class UpdateTasksServiceImpl implements UpdateTasksService {
       return map;
     }
 
+    Departments departments_new = departmentsMapper.selectById(Integer.parseInt(pd_no));
+    Departments departments_old = departmentsMapper.selectById(tasks.getPdNo());
+
+    if (departments_new == null) {
+      map.put("error_message", "印刷部门不存在");
+      return map;
+    }
+
+    String pName_new = departments_new.getPdName();
+    String teleNumber_new = departments_new.getTeleNumber();
+
     tasks.setPdNo(Integer.parseInt(pd_no));
     tasks.setTime(time);
+    tasks.setPdName(pName_new);
+    tasks.setTeleNumber(teleNumber_new);
+
+    departments_new.setNum(departments_new.getNum() + 1);
+    departmentsMapper.updateById(departments_new);
+    departments_old.setNum(departments_old.getNum() - 1);
+    departmentsMapper.updateById(departments_old);
+
     tasksMapper.updateById(tasks);
     map.put("error_message", "success");
     return map;

@@ -57,51 +57,37 @@
                                     <button type="button" class="btn btn-info" @click="task_start(task)" v-if="task.state == 0">
                                         开始印刷
                                     </button>
-                                    <!-- <button type="button" class="btn btn-secondary" style="margin-right: 10px;" data-bs-toggle="modal" :data-bs-target="'#update-doc-modal-' + doc.dno">
+                                    <button type="button" class="btn btn-secondary" style="margin-top: 10px;" data-bs-toggle="modal" :data-bs-target="'#update-task-modal-' + task.tno" v-if="task.state == 0 || task.state == 2">
                                         修改
                                     </button>
-                                    <button type="button" class="btn btn-danger" @click="remove_doc(doc)">
-                                        删除
-                                    </button> -->
+                                    
 
                                     <!-- Modal -->
-                                    <!-- <div class="modal fade" :id="'update-doc-modal-' + doc.dno" tabindex="-1">
+                                    <div class="modal fade" :id="'update-task-modal-' + task.tno" tabindex="-1">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
                                             <div class="modal-header">
-                                                <h1 class="modal-title fs-5">修改印刷单据</h1>
+                                                <h1 class="modal-title fs-5">修改印刷任务</h1>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body">
                                                 <div class="mb-3">
-                                                <label for="update-doc-pname" class="form-label">出版商名称</label>
-                                                <input v-model="doc.pname" type="text" class="form-control" id="update-doc-pname">
+                                                <label for="update-task-pdno" class="form-label">印刷部门编号</label>
+                                                <input v-model="task.pdNo" type="text" class="form-control" id="update-task-pdno">
                                                 </div>
                                                 <div class="mb-3">
-                                                <label for="update-doc-bname" class="form-label">书籍名称</label>
-                                                <input v-model="doc.bname" type="text" class="form-control" id="update-doc-bname">
-                                                </div>
-                                                <div class="mb-3">
-                                                <label for="update-doc-font" class="form-label">印刷字体</label>
-                                                <input v-model="doc.font" type="text" class="form-control" id="update-doc-font">
-                                                </div>
-                                                <div class="mb-3">
-                                                <label for="update-doc-mname" class="form-label">印刷材料名称</label>
-                                                <input v-model="doc.mname" type="text" class="form-control" id="update-doc-mname">
-                                                </div>
-                                                <div class="mb-3">
-                                                <label for="update-doc-num" class="form-label">印刷数量</label>
-                                                <input v-model="doc.num" type="text" class="form-control" id="update-doc-num">
+                                                <label for="update-task-time" class="form-label">预计完成时间</label>
+                                                <input v-model="task.time" type="text" class="form-control" id="update-task-time">
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
-                                                <div class="error_message">{{ doc.error_message }}</div>
-                                                <button type="button" class="btn btn-primary" @click="update_doc(doc)">保存修改</button>
+                                                <div class="error_message">{{ task.error_message }}</div>
+                                                <button type="button" class="btn btn-primary" @click="update_task(task)">保存修改</button>
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
                                             </div>
                                             </div>
                                         </div>
-                                    </div> -->
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
@@ -117,6 +103,7 @@ import NavBar_A from "@/components/NavBar_A.vue";
 import { useStore } from "vuex";
 import { ref } from "vue";
 import $ from "jquery";
+import { Modal } from "bootstrap/dist/js/bootstrap";
 export default{
     components: {
         NavBar_A,
@@ -156,6 +143,7 @@ export default{
                 },
                 success(resp) {
                     if(resp.error_message === "success") {
+                        
                         alert("删除成功！");
                         refresh_tasks(3);
                     }
@@ -217,12 +205,41 @@ export default{
         })
     }
 
+    const update_task = (task) => {
+        $.ajax({
+            url: "http://127.0.0.1:4000/tasks/update/",
+            type: "POST",
+            data: {
+                task_no: task.tno,
+                pd_no: task.pdNo,
+                time: task.time,
+            },
+            headers: {
+                Authorization: "Bearer " + store.state.user.token,  
+            },
+            success(resp) {
+                if(resp.error_message === "success") {
+                    Modal.getInstance(document.querySelector('#update-task-modal-' + task.tno)).hide();
+                        const backdrop = document.querySelector('.modal-backdrop');
+                        if (backdrop) {
+                            backdrop.remove(); // 移除模态框的遮罩层
+                        }
+                    refresh_tasks(3);
+                }
+                else {
+                    alert("修改失败：" + resp.error_message);
+                }
+            }
+        })
+    }
+
         return {
             refresh_tasks,
             tasks,
             remove_task,
             task_finish,
             task_start,
+            update_task,
         }
         
     }
